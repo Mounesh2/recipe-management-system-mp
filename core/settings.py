@@ -84,9 +84,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database - use Supabase Session Pooler (IPv4 compatible) for Render
 # Session pooler URL from Supabase dashboard - ap-northeast-1 region
 SUPABASE_POOLER_URL = 'postgresql://postgres.tvrqghyjmuilsnglcuzx:Mounesh%408845@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres'
+
+DATABASE_URL = os.environ.get('DATABASE_URL', SUPABASE_POOLER_URL)
+if 'db.tvrqghyjmuilsnglcuzx.supabase.co' in DATABASE_URL or 'tvrqghyjmuilsnglcuzx.supabase.co' in DATABASE_URL:
+    DATABASE_URL = SUPABASE_POOLER_URL
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=SUPABASE_POOLER_URL,
+        default=DATABASE_URL,
         conn_max_age=600,
     )
 }
