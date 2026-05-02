@@ -14,13 +14,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
-import socket
-
-orig_getaddrinfo = socket.getaddrinfo
-def filtered_getaddrinfo(*args, **kwargs):
-    responses = orig_getaddrinfo(*args, **kwargs)
-    return [r for r in responses if r[0] == socket.AF_INET]
-socket.getaddrinfo = filtered_getaddrinfo
 
 load_dotenv()
 
@@ -88,11 +81,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-# Database
-# This will read DATABASE_URL from your .env file
+# Database - use Supabase Connection Pooler (IPv4 compatible) for Render
+# The pooler host aws-0-us-west-1.pooler.supabase.com resolves to IPv4
+SUPABASE_POOLER_URL = 'postgresql://postgres.tvrqghyjmuilsnglcuzx:Mounesh%408845@aws-0-us-west-1.pooler.supabase.com:5432/postgres'
 DATABASES = {
-    'default': dj_database_url.parse(
-        'postgresql://postgres:Mounesh%408845@db.tvrqghyjmuilsnglcuzx.supabase.co:6543/postgres',
+    'default': dj_database_url.config(
+        default=SUPABASE_POOLER_URL,
         conn_max_age=600,
     )
 }
