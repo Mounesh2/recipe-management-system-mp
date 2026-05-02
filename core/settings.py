@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # This will read DATABASE_URL from your .env file
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
+        default='postgresql://postgres:Mounesh%408845@db.tvrqghyjmuilsnglcuzx.supabase.co:5432/postgres',
         conn_max_age=600,
     )
 }
