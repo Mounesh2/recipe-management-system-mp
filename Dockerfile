@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
 COPY backend_requirements.txt /app/
 RUN pip install --no-cache-dir -r backend_requirements.txt
 
+# Force cache bust to always copy latest app code
+ARG CACHEBUST=2
 # Copy the application code
 COPY . /app/
 
