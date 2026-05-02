@@ -81,9 +81,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-# Database - use Supabase Connection Pooler (IPv4 compatible) for Render
-# The pooler host aws-0-us-west-1.pooler.supabase.com resolves to IPv4
-SUPABASE_POOLER_URL = 'postgresql://postgres.tvrqghyjmuilsnglcuzx:Mounesh%408845@aws-0-us-west-1.pooler.supabase.com:5432/postgres'
+# Database - use Supabase Session Pooler (IPv4 compatible) for Render
+# Session pooler URL from Supabase dashboard - ap-northeast-1 region
+SUPABASE_POOLER_URL = 'postgresql://postgres.tvrqghyjmuilsnglcuzx:Mounesh%408845@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres'
 DATABASES = {
     'default': dj_database_url.config(
         default=SUPABASE_POOLER_URL,
