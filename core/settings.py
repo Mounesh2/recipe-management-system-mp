@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
-from pathlib import Path
-from dotenv import load_dotenv
 import dj_database_url
+import socket
+
+orig_getaddrinfo = socket.getaddrinfo
+def filtered_getaddrinfo(*args, **kwargs):
+    responses = orig_getaddrinfo(*args, **kwargs)
+    return [r for r in responses if r[0] == socket.AF_INET]
+socket.getaddrinfo = filtered_getaddrinfo
 
 load_dotenv()
 
