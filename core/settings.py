@@ -88,12 +88,10 @@ SUPABASE_POOLER_URL = 'postgresql://postgres.tvrqghyjmuilsnglcuzx:Mounesh%408845
 DATABASE_URL = os.environ.get('DATABASE_URL', SUPABASE_POOLER_URL)
 if 'db.tvrqghyjmuilsnglcuzx.supabase.co' in DATABASE_URL or 'tvrqghyjmuilsnglcuzx.supabase.co' in DATABASE_URL:
     DATABASE_URL = SUPABASE_POOLER_URL
+    os.environ['DATABASE_URL'] = SUPABASE_POOLER_URL
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600,
-    )
+    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
 
 
