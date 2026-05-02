@@ -23,7 +23,13 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from users.views import CreateUserView
 
+from django.http import JsonResponse
+
+def welcome_view(request):
+    return JsonResponse({"message": "Recipe App Backend API is live and running perfectly!"})
+
 urlpatterns = [
+    path('', welcome_view, name='welcome'),
     path('admin/', admin.site.urls),
     path('api/token/', obtain_auth_token, name='token_obtain_pair'),
     path('api/users/create/', CreateUserView.as_view(), name='create_user'),
