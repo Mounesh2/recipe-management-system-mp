@@ -34,7 +34,7 @@ api.interceptors.request.use((config) => {
 // --- Auth Endpoints ---
 
 export const login = async (email, password) => {
-    const response = await api.post('/token/', { email, password });
+    const response = await api.post('/token/', { email, username: email, password });
     if (response.data.token) {
         localStorage.setItem('token', response.data.token);
     }
