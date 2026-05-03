@@ -87,7 +87,7 @@ const RecipeDetailPage = () => {
         return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
     };
 
-    const imageSource = getBeautifulFoodImage();
+    const imageSource = recipe.image || getBeautifulFoodImage();
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">

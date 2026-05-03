@@ -28,7 +28,7 @@ const RecipeCard = ({ id, title, image, cookingTime, price, tags = [] }) => {
         return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
     };
 
-    const imageSource = getBeautifulFoodImage();
+    const imageSource = image || getBeautifulFoodImage();
 
     return (
         <Link 

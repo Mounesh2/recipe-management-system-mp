@@ -18,6 +18,10 @@ const cleanImageUrl = (url) => {
             const index = decoded.lastIndexOf('http');
             return decoded.substring(index);
         }
+        if (decoded.startsWith('/media/')) {
+            const base = API_BASE_URL.includes('/api') ? API_BASE_URL.split('/api')[0] : API_BASE_URL;
+            return `${base}${decoded}`;
+        }
     } catch (e) {}
     return url;
 };

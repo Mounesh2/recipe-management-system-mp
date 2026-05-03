@@ -43,7 +43,8 @@ const CreateRecipePage = () => {
                         ingredients: data.ingredients?.length > 0 
                             ? data.ingredients.map(i => ({ name: i.name || '', quantity: i.quantity || '' }))
                             : [{ name: '', quantity: '' }],
-                        youtube_url: data.youtube_url || ''
+                        youtube_url: data.youtube_url || '',
+                        image: data.image || ''
                     });
                     if (data.image) setImagePreview(data.image);
                 } catch (error) {
@@ -92,12 +93,14 @@ const CreateRecipePage = () => {
         setSubmitting(true);
 
         try {
-            // Clean up payload
+            const cleanedIngredients = (formData.ingredients || []).filter(ing => ing.name && ing.name.trim() !== '' && ing.quantity && ing.quantity.trim() !== '');
+
             const payload = {
                 ...formData,
                 cooking_time: parseInt(formData.cooking_time, 10),
                 price: parseFloat(formData.price),
-                tags: formData.tags.map(t => parseInt(t, 10)) // Ensure tags are integers if backend expects IDs
+                tags: formData.tags.map(t => parseInt(t, 10)), // Ensure tags are integers if backend expects IDs
+                ingredients: cleanedIngredients
             };
 
             let response;
