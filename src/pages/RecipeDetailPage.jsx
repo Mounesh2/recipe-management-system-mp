@@ -65,17 +65,12 @@ const RecipeDetailPage = () => {
         const t = (recipe.title || '').toLowerCase();
 
         // 20 verified 200 OK exclusively food Unsplash IDs
-        const biryanis = ['1512621776951-a57141f2eefd', '1540189549336-e6e99c3679fe', '1546069901-ba9599a7e63c'];
-        const curries = ['1473093295043-cdd812d0e601', '1476224203421-9ac39bcb3327', '1504754524776-8f4f37790ca0'];
-        const cakes = ['1565958011703-44f9829ba187', '1515037893149-de7f840978e2', '1551024506-0bccd828d307'];
-        const pizzas = ['1513104890138-7c749659a591', '1565299624946-b28f40a0ae38', '1506354666786-959d6d497f1a', '1604382354936-07c5d9983bd3'];
-        const shakes = ['1579954115545-a95591f28bfc', '1567620832903-9fc6debc209f', '1482049016688-2d3e1b311543'];
         const universalFood = [
             '1546069901-ba9599a7e63c', '1540189549336-e6e99c3679fe', '1565299624946-b28f40a0ae38', '1567620905732-2d1ec7ab7445',
             '1512621776951-a57141f2eefd', '1513104890138-7c749659a591', '1555939594-58d7cb561ad1', '1499028344343-cd173ffc68a9',
             '1476224203421-9ac39bcb3327', '1482049016688-2d3e1b311543', '1473093295043-cdd812d0e601', '1544025162-d76694265947',
-            '1506354666786-959d6d497f1a', '1565958011703-44f9829ba187', '1551024506-0bccd828d307', '1567620832903-9fc6debc209f',
-            '1579954115545-a95591f28bfc', '1504754524776-8f4f37790ca0', '1604382354936-07c5d9983bd3', '1515037893149-de7f840978e2'
+            '1579954115545-a95591f28bfc', '1567620832903-9fc6debc209f', '1506354666786-959d6d497f1a', '1504754524776-8f4f37790ca0',
+            '1551024506-0bccd828d307', '1604382354936-07c5d9983bd3', '1515037893149-de7f840978e2', '1565958011703-44f9829ba187'
         ];
 
         let hash = recipe.id || 0;
@@ -84,27 +79,12 @@ const RecipeDetailPage = () => {
         }
         hash = Math.abs(hash);
 
-        let unsplashId = '';
-        if (t.includes('biryani')) {
-            unsplashId = biryanis[hash % biryanis.length];
-        } else if (t.includes('curry')) {
-            unsplashId = curries[hash % curries.length];
-        } else if (t.includes('cake')) {
-            unsplashId = cakes[hash % cakes.length];
-        } else if (t.includes('pizza')) {
-            unsplashId = pizzas[hash % pizzas.length];
-        } else if (t.includes('shake') || t.includes('smoothie')) {
-            unsplashId = shakes[hash % shakes.length];
-        } else if (t.includes('ice cream') || t.includes('tiramisu')) {
-            unsplashId = cakes[hash % cakes.length];
-        } else {
-            unsplashId = universalFood[hash % universalFood.length];
-        }
+        const unsplashId = universalFood[hash % universalFood.length];
 
-        // Add dynamic contrast/brightness per recipe to keep the photos varied and distinct
-        const con = 100 + (hash % 10);
-        const bri = 100 - (hash % 5);
-        return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=1200&q=80&con=${con}&bri=${bri}`;
+        // Safely adjust dimensions by a few pixels so caching is separated and images vary slightly
+        const w = 1200 + (hash % 15);
+        const h = 600 + (hash % 15);
+        return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
     };
 
     const imageSource = getBeautifulFoodImage();
