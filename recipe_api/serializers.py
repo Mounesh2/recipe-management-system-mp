@@ -29,13 +29,19 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'image']
 
     def get_image(self, obj):
-        if obj.image:
-            # Verify file exists on storage/disk before serving
-            if hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
-                request = self.context.get('request')
-                if request:
-                    return request.build_absolute_uri(obj.image.url)
-                return obj.image.url if hasattr(obj.image, 'url') else str(obj.image)
+        try:
+            if obj.image:
+                img_name = str(obj.image.name)
+                # Ignore old missing Unsplash files on Render disk
+                if img_name.startswith('recipes/1') or img_name.startswith('recipes/14') or img_name.startswith('recipes/15') or img_name.startswith('recipes/16'):
+                    pass
+                elif hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
+                    request = self.context.get('request')
+                    if request:
+                        return request.build_absolute_uri(obj.image.url)
+                    return obj.image.url if hasattr(obj.image, 'url') else str(obj.image)
+        except Exception:
+            pass
 
         # 20 top-tier verified active Unsplash IDs
         universal_food = [
