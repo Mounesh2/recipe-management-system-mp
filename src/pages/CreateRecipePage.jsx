@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createRecipe, updateRecipe, getRecipe } from '../services/api';
+import { createRecipe, updateRecipe, getRecipe, uploadRecipeImage } from '../services/api';
 import ImageUpload from '../components/ImageUpload';
 
 const CreateRecipePage = () => {
@@ -25,6 +25,7 @@ const CreateRecipePage = () => {
     });
 
     const [imagePreview, setImagePreview] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     useEffect(() => {
         if (isEditing) {
@@ -104,6 +105,13 @@ const CreateRecipePage = () => {
                 response = await updateRecipe(id, payload);
             } else {
                 response = await createRecipe(payload);
+                if (selectedFile) {
+                    try {
+                        await uploadRecipeImage(response.id, selectedFile);
+                    } catch (uploadErr) {
+                        console.error("Auto image upload failed", uploadErr);
+                    }
+                }
             }
 
             // Note: If you need to POST ingredients separately to an Ingredients API, 
@@ -245,6 +253,19 @@ const CreateRecipePage = () => {
                                     <option value="5">Dessert</option>
                                 </select>
                             </div>
+
+                            {!isEditing && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Recipe Photo</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setSelectedFile(e.target.files[0])}
+                                        className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Select an image for this new recipe (Optional)</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Ingredients */}
@@ -308,16 +329,18 @@ const CreateRecipePage = () => {
                     </form>
                 </div>
 
-                <div className="mt-8">
-                    <ImageUpload 
-                        recipeId={id} 
-                        currentImage={imagePreview} 
-                        onUploadSuccess={(newImageUrl) => {
-                            setImagePreview(newImageUrl);
-                            setFormData(prev => ({ ...prev, image: newImageUrl }));
-                        }} 
-                    />
-                </div>
+                {isEditing && (
+                    <div className="mt-8">
+                        <ImageUpload 
+                            recipeId={id} 
+                            currentImage={imagePreview} 
+                            onUploadSuccess={(newImageUrl) => {
+                                setImagePreview(newImageUrl);
+                                setFormData(prev => ({ ...prev, image: newImageUrl }));
+                            }} 
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
