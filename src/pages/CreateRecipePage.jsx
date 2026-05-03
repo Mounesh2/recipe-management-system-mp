@@ -123,7 +123,19 @@ const CreateRecipePage = () => {
             navigate(`/recipes/${response.id}`);
         } catch (error) {
             console.error("Save failed:", error);
-            setError(error.response?.data?.detail || "An error occurred while saving the recipe.");
+            if (error.response?.data) {
+                const data = error.response.data;
+                if (typeof data === 'object') {
+                    const message = Object.entries(data)
+                        .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+                        .join(' | ');
+                    setError(message || "An error occurred.");
+                } else {
+                    setError(data);
+                }
+            } else {
+                setError(error.message || "An error occurred while saving the recipe.");
+            }
         } finally {
             setSubmitting(false);
         }
