@@ -88,15 +88,15 @@ const RecipeListPage = () => {
                 <div className="flex flex-wrap justify-center gap-8 py-8 border-y border-gray-100 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
                     {[
                         { name: 'All', img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&auto=format' },
-                        { name: 'Veg Biryani', img: 'https://images.unsplash.com/photo-1563379011709-8432529d5f8e?w=100&auto=format' },
+                        { name: 'Veg Biryani', img: '/veg_biryani.png' },
                         { name: 'Non-Veg Biryani', img: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=100&auto=format' },
                         { name: 'Veg Curry', img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=100&auto=format' },
-                        { name: 'Non-Veg Curry', img: 'https://images.unsplash.com/photo-1603894584373-5ac1290ae1f1?w=100&auto=format' },
+                        { name: 'Non-Veg Curry', img: '/non_veg_curry.png' },
                         { name: 'Pizza', img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=100&auto=format' },
                         { name: 'Cake', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&auto=format' },
                         { name: 'Ice Cream', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=100&auto=format' },
                         { name: 'Shake', img: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=100&auto=format' },
-                        { name: 'Dessert', img: 'https://images.unsplash.com/photo-1551024601-bec78abc704b?w=100&auto=format' }
+                        { name: 'Dessert', img: '/dessert.png' }
                     ].map((cat) => (
                         <button
                             key={cat.name}

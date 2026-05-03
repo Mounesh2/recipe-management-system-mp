@@ -58,7 +58,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         
         return serializers.RecipeSerializer
 
-    @action(methods=['PATCH'], detail=True, url_path='upload-image')
+    @action(methods=['POST', 'PATCH'], detail=True, url_path='upload-image')
     def upload_image(self, request, pk=None):
         """Custom action to upload an image to a recipe."""
         recipe = self.get_object()
