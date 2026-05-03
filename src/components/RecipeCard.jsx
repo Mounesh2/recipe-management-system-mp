@@ -11,7 +11,8 @@ const RecipeCard = ({ id, title, image, cookingTime, price, tags = [] }) => {
         if (imageSource.includes('recipes/') && imageSource.includes('.jpg')) {
             const match = imageSource.match(/recipes\/([^/.]+)\.jpg/);
             if (match && match[1]) {
-                imageSource = `https://images.unsplash.com/photo-${match[1]}?auto=format&fit=crop&w=800&q=80`;
+                const unsplashId = match[1].split('_')[0];
+                imageSource = `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=800&q=80`;
             }
         }
     }
