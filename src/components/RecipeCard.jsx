@@ -2,12 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const RecipeCard = ({ id, title, image, cookingTime, price, tags = [] }) => {
-    // A placeholder image fallback if none is provided
     let imageSource = image || 'https://via.placeholder.com/400x300?text=No+Image+Available';
     try {
         imageSource = decodeURIComponent(imageSource);
     } catch (e) {}
-    if (imageSource.includes('http')) {
+
+    if (imageSource && typeof imageSource === 'string') {
+        if (imageSource.includes('recipes/') && imageSource.includes('.jpg')) {
+            const match = imageSource.match(/recipes\/([^/.]+)\.jpg/);
+            if (match && match[1]) {
+                imageSource = `https://images.unsplash.com/photo-${match[1]}?auto=format&fit=crop&w=800&q=80`;
+            }
+        }
+    }
+
+    if (imageSource && imageSource.includes('http')) {
         const lastIndex = imageSource.lastIndexOf('http');
         imageSource = imageSource.substring(lastIndex);
     }

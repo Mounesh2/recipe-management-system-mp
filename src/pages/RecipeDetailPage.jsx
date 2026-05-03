@@ -65,7 +65,17 @@ const RecipeDetailPage = () => {
     try {
         imageSource = decodeURIComponent(imageSource);
     } catch (e) {}
-    if (imageSource.includes('http')) {
+
+    if (imageSource && typeof imageSource === 'string') {
+        if (imageSource.includes('recipes/') && imageSource.includes('.jpg')) {
+            const match = imageSource.match(/recipes\/([^/.]+)\.jpg/);
+            if (match && match[1]) {
+                imageSource = `https://images.unsplash.com/photo-${match[1]}?auto=format&fit=crop&w=1200&q=80`;
+            }
+        }
+    }
+
+    if (imageSource && imageSource.includes('http')) {
         const lastIndex = imageSource.lastIndexOf('http');
         imageSource = imageSource.substring(lastIndex);
     }
