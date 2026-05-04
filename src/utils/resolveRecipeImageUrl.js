@@ -38,15 +38,8 @@ function hashFoodImage(title, id) {
  */
 export function resolveRecipeImageUrl(title, recipeId, apiImage) {
     const cleanTitle = normalizeRecipeTitle(title);
-    const catalog = getRecipeCoverUrlWithAliases(cleanTitle) || getRecipeCoverUrlWithAliases(title);
-    if (catalog) {
-        return catalog;
-    }
-
     const raw = String(apiImage || '').trim();
-    if (!raw) {
-        return hashFoodImage(cleanTitle, recipeId);
-    }
+
     if (raw.startsWith('data:image/')) {
         return raw;
     }
@@ -55,6 +48,18 @@ export function resolveRecipeImageUrl(title, recipeId, apiImage) {
     }
     if (raw.startsWith('http://') || raw.startsWith('https://')) {
         return raw;
+    }
+    const catalog = getRecipeCoverUrlWithAliases(cleanTitle) || getRecipeCoverUrlWithAliases(title);
+    if (catalog) {
+        return catalog;
+    }
+
+    if (!raw) {
+        return hashFoodImage(cleanTitle, recipeId);
+    }
+    // Uploaded files on Render are often 404 after redeploy — don't use for display.
+    if (raw.includes('/media/')) {
+        return hashFoodImage(cleanTitle, recipeId);
     }
     return hashFoodImage(cleanTitle, recipeId);
 }
