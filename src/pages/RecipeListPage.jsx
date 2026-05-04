@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecipes } from '../services/api';
 import RecipeCard from '../components/RecipeCard';
+import { resolveRecipeImageUrl } from '../utils/resolveRecipeImageUrl';
 
 const RecipeListPage = () => {
     const [recipes, setRecipes] = useState([]);
@@ -28,9 +29,11 @@ const RecipeListPage = () => {
     // Note: handles both objects (if nested) or IDs/Strings
     const uniqueTags = Array.from(
         new Set(
-            recipes.flatMap(recipe => 
-                recipe.tags?.map(tag => typeof tag === 'object' ? tag.name : tag) || []
-            )
+            recipes.flatMap(recipe => {
+                if (!recipe || !recipe.tags) return [];
+                if (!Array.isArray(recipe.tags)) return [recipe.tags];
+                return recipe.tags.map(tag => typeof tag === 'object' ? tag?.name : tag);
+            })
         )
     ).filter(Boolean);
 
@@ -197,7 +200,11 @@ const RecipeListPage = () => {
                                 key={recipe.id}
                                 id={recipe.id}
                                 title={recipe.title}
-                                image={recipe.image}
+                                image={resolveRecipeImageUrl(
+                                    recipe.title,
+                                    recipe.id,
+                                    recipe.image
+                                )}
                                 cookingTime={recipe.cooking_time}
                                 price={recipe.price}
                                 tags={recipe.tags}

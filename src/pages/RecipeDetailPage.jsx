@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getRecipe, deleteRecipe } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { getRecipeCoverUrlWithAliases } from '../data/recipeCoverImages';
+import { resolveRecipeImageUrl } from '../utils/resolveRecipeImageUrl';
 
 const RecipeDetailPage = () => {
     const { id } = useParams();
@@ -88,8 +88,7 @@ const RecipeDetailPage = () => {
         return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
     };
 
-    const catalogCover = getRecipeCoverUrlWithAliases(recipe.title);
-    const imageSource = catalogCover || recipe.image || getBeautifulFoodImage();
+    const imageSource = resolveRecipeImageUrl(recipe.title, recipe.id, recipe.image);
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -131,9 +130,12 @@ const RecipeDetailPage = () => {
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     {/* Hero Image */}
                     <div className="w-full h-80 sm:h-96 relative">
-                        <img 
-                            src={imageSource} 
-                            alt={recipe.title} 
+                        <img
+                            src={imageSource}
+                            alt={recipe.title}
+                            loading="eager"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
                             onError={(e) => {
                                 e.target.onerror = null;
                                 const fallback = getBeautifulFoodImage();
