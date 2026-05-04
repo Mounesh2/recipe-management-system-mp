@@ -56,7 +56,56 @@ class RecipeSerializer(serializers.ModelSerializer):
         except Exception:
             pass
 
-        t = (obj.title or "").lower()
+        t = (obj.title or "").lower().strip()
+
+        # Direct explicit mappings for exactly 42 recipes
+        mappings = {
+            'paneer biryani': 'https://images.unsplash.com/photo-1563379011-7c749659a591?auto=format&fit=crop&w=800&h=600&q=80',
+            'hyderabadi veg biryani': 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&h=600&q=80',
+            'awadhi veg biryani': 'https://images.unsplash.com/photo-1631515233482-962f06f2e2a1?auto=format&fit=crop&w=800&h=600&q=80',
+            'kolkata veg biryani': 'https://images.unsplash.com/photo-1633945281428-c5517cfdb8dc?auto=format&fit=crop&w=800&h=600&q=80',
+            'sindhi veg biryani': 'https://images.unsplash.com/photo-1626777552726-4a6b5ead36ef?auto=format&fit=crop&w=800&h=600&q=80',
+            'chicken dum biryani': 'https://images.unsplash.com/photo-1563379011-7c749659a591?auto=format&fit=crop&w=800&h=600&q=80',
+            'mutton biryani': 'https://images.unsplash.com/photo-1603960280030-dbb39794ee73?auto=format&fit=crop&w=800&h=600&q=80',
+            'egg biryani': 'https://images.unsplash.com/photo-1512058560366-cd24b7d561d1?auto=format&fit=crop&w=800&h=600&q=80',
+            'prawn biryani': 'https://images.unsplash.com/photo-1618449830515-c4542d0a927a?auto=format&fit=crop&w=800&h=600&q=80',
+            'paneer butter masala': 'https://images.unsplash.com/photo-1567620832-9fc6debc209f?auto=format&fit=crop&w=800&h=600&q=80',
+            'palak paneer': 'https://images.unsplash.com/photo-1565557623162-a5d1a12d12d1?auto=format&fit=crop&w=800&h=600&q=80',
+            'dal makhani': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&h=600&q=80',
+            'chole masala': 'https://images.unsplash.com/photo-1560614830-0e1db426e8aa?auto=format&fit=crop&w=800&h=600&q=80',
+            'mushroom masala': 'https://images.unsplash.com/photo-1585934580926-f94626bf209f?auto=format&fit=crop&w=800&h=600&q=80',
+            'chicken tikka masala': 'https://images.unsplash.com/photo-1541167760-496-16295578f7f3?auto=format&fit=crop&w=800&h=600&q=80',
+            'fish curry': 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&h=600&q=80',
+            'egg curry': 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&h=600&q=80',
+            'pizza margherita': 'https://images.unsplash.com/photo-1513104890-138-7c749659a591?auto=format&fit=crop&w=800&h=600&q=80',
+            'pizza pepperoni': 'https://images.unsplash.com/photo-1565299624-b28f40a0ae38?auto=format&fit=crop&w=800&h=600&q=80',
+            'pizza paneer tikka': 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=800&h=600&q=80',
+            'veggie lovers pizza': 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=800&h=600&q=80',
+            'bbq chicken pizza': 'https://images.unsplash.com/photo-1528137871618-79d2761e3fd5?auto=format&fit=crop&w=800&h=600&q=80',
+            'black forest cake': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&h=600&q=80',
+            'red velvet cake': 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&h=600&q=80',
+            'vanilla buttercream cake': 'https://images.unsplash.com/photo-1515037893149-de7f840978e2?auto=format&fit=crop&w=800&h=600&q=80',
+            'chocolate fudge cake': 'https://images.unsplash.com/photo-1506354666786-959d6d497f1a?auto=format&fit=crop&w=800&h=600&q=80',
+            'carrot cake': 'https://images.unsplash.com/photo-1535141123063-3db45091390c?auto=format&fit=crop&w=800&h=600&q=80',
+            'tiramisu cake': 'https://images.unsplash.com/photo-1562967082-ce95c3ae6475?auto=format&fit=crop&w=800&h=600&q=80',
+            'vanilla bean ice cream': 'https://images.unsplash.com/photo-1563805042-df1a82f0a635?auto=format&fit=crop&w=800&h=600&q=80',
+            'chocolate fudge ice cream': 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=800&h=600&q=80',
+            'strawberry ripple ice cream': 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&h=600&q=80',
+            'cookies and cream ice cream': 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&h=600&q=80',
+            'pistachio ice cream': 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&h=600&q=80',
+            'oreo milkshake': 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=800&h=600&q=80',
+            'strawberry banana shake': 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=800&h=600&q=80',
+            'chocolate peanut butter shake': 'https://images.unsplash.com/photo-1532980400377-44020efc4051?auto=format&fit=crop&w=800&h=600&q=80',
+            'mango thickshake': 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=800&h=600&q=80',
+            'vanilla caramel shake': 'https://images.unsplash.com/photo-1553163147-9f62442af1e2?auto=format&fit=crop&w=800&h=600&q=80',
+            'gulab jamun': 'https://images.unsplash.com/photo-1586985289688-aa924f7e5651?auto=format&fit=crop&w=800&h=600&q=80',
+            'chocolate lava cake': 'https://images.unsplash.com/photo-1515037893149-de7f840978e2?auto=format&fit=crop&w=800&h=600&q=80',
+            'apple pie': 'https://images.unsplash.com/photo-1553163147-9f62442af1e2?auto=format&fit=crop&w=800&h=600&q=80',
+            'brownie with ice cream': 'https://images.unsplash.com/photo-1563805042-df1a82f0a635?auto=format&fit=crop&w=800&h=600&q=80'
+        }
+        for k, v in mappings.items():
+            if k in t:
+                return v
 
         # Group by highly specific keywords so similar recipes always get a relevant photo
         if 'biryani' in t or 'pulao' in t:
