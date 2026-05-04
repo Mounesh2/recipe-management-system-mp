@@ -32,8 +32,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         try:
             if obj.image:
                 img_name = str(obj.image.name)
-                # Only serve manually uploaded real photos
-                if '_real' in img_name:
+                # Ignore the old duplicate placeholder files that start with recipes/14, 15, or 16
+                if img_name.startswith('recipes/14') or img_name.startswith('recipes/15') or img_name.startswith('recipes/16'):
+                    pass
+                elif hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
                     request = self.context.get('request')
                     if request:
                         return request.build_absolute_uri(obj.image.url)
