@@ -32,8 +32,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         try:
             if obj.image:
                 img_name = str(obj.image.name)
-                # Ignore the old duplicate placeholder files that start with recipes/14, 15, or 16
-                if img_name.startswith('recipes/14') or img_name.startswith('recipes/15') or img_name.startswith('recipes/16'):
+                import re
+                # Uniquely match the old duplicate placeholder files
+                is_old_placeholder = bool(re.search(r'^recipes/1\d{9}-[a-f0-9]{12}_[A-Za-z0-9]{7}\.(jpg|jpeg|png)$', img_name))
+                if is_old_placeholder:
                     pass
                 elif hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
                     request = self.context.get('request')
