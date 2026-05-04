@@ -30,27 +30,35 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'image']
 
     def get_image(self, obj):
+        # Prefer curated per-title Unsplash URLs so each catalog recipe gets a distinct image
+        # even when the DB points at the same missing/ephemeral uploaded file (common on Render).
+        mapped_id = recipe_images.unsplash_id_for_title(obj.title or "")
+        if mapped_id:
+            return recipe_images.unsplash_url(
+                mapped_id, recipe_id=getattr(obj, "pk", None) or getattr(obj, "id", None)
+            )
+
         try:
             if obj.image:
                 img_name = str(obj.image.name)
                 import re
-                # Uniquely match the old duplicate placeholder files
-                is_old_placeholder = bool(re.search(r'^recipes/1\d{9}-[a-f0-9]{12}_[A-Za-z0-9]{7}\.(jpg|jpeg|png)$', img_name))
+                is_old_placeholder = bool(
+                    re.search(
+                        r"^recipes/1\d{9}-[a-f0-9]{12}_[A-Za-z0-9]{7}\.(jpg|jpeg|png)$",
+                        img_name,
+                    )
+                )
                 if is_old_placeholder:
                     pass
-                elif hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
-                    request = self.context.get('request')
+                elif hasattr(obj.image, "storage") and obj.image.storage.exists(obj.image.name):
+                    request = self.context.get("request")
                     if request:
                         return request.build_absolute_uri(obj.image.url)
-                    return obj.image.url if hasattr(obj.image, 'url') else str(obj.image)
+                    return obj.image.url if hasattr(obj.image, "url") else str(obj.image)
         except Exception:
             pass
 
-        mapped = recipe_images.unsplash_id_for_title(obj.title or "")
-        if mapped:
-            return recipe_images.unsplash_url(mapped)
-
-        t = (obj.title or '').lower()
+        t = (obj.title or "").lower()
 
         # Group by highly specific keywords so similar recipes always get a relevant photo
         if 'biryani' in t or 'pulao' in t:
