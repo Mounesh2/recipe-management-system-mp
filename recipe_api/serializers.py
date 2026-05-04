@@ -31,7 +31,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         try:
             if obj.image:
-                if hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
+                img_name = str(obj.image.name)
+                # Only serve manually uploaded real photos
+                if '_real' in img_name:
                     request = self.context.get('request')
                     if request:
                         return request.build_absolute_uri(obj.image.url)
