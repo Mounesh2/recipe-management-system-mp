@@ -162,9 +162,22 @@ class RecipeDetailSerializer(RecipeSerializer):
             if isinstance(ing, dict) and ing.get('name') and ing.get('quantity'):
                 Ingredient.objects.create(recipe=recipe, name=ing['name'], quantity=ing['quantity'])
         
-        # Handle tags
+        # Handle tags safely
         if tags_data:
-            recipe.tags.set(tags_data)
+            from recipe_api.models import Tag
+            valid_tag_ids = []
+            for t_val in tags_data:
+                if isinstance(t_val, dict) and 'id' in t_val:
+                    valid_tag_ids.append(t_val['id'])
+                elif isinstance(t_val, int):
+                    valid_tag_ids.append(t_val)
+                elif isinstance(t_val, str) and t_val.isdigit():
+                    valid_tag_ids.append(int(t_val))
+                elif isinstance(t_val, str):
+                    tag_obj, _ = Tag.objects.get_or_create(name=t_val.strip())
+                    valid_tag_ids.append(tag_obj.id)
+            existing_tag_ids = list(Tag.objects.filter(id__in=valid_tag_ids).values_list('id', flat=True))
+            recipe.tags.set(existing_tag_ids)
             
         return recipe
 
@@ -187,7 +200,20 @@ class RecipeDetailSerializer(RecipeSerializer):
                     Ingredient.objects.create(recipe=instance, name=ing['name'], quantity=ing['quantity'])
                     
         if tags_data is not None:
-            instance.tags.set(tags_data)
+            from recipe_api.models import Tag
+            valid_tag_ids = []
+            for t_val in tags_data:
+                if isinstance(t_val, dict) and 'id' in t_val:
+                    valid_tag_ids.append(t_val['id'])
+                elif isinstance(t_val, int):
+                    valid_tag_ids.append(t_val)
+                elif isinstance(t_val, str) and t_val.isdigit():
+                    valid_tag_ids.append(int(t_val))
+                elif isinstance(t_val, str):
+                    tag_obj, _ = Tag.objects.get_or_create(name=t_val.strip())
+                    valid_tag_ids.append(tag_obj.id)
+            existing_tag_ids = list(Tag.objects.filter(id__in=valid_tag_ids).values_list('id', flat=True))
+            instance.tags.set(existing_tag_ids)
             
         return instance
 
