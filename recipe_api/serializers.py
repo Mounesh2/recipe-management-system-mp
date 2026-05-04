@@ -46,9 +46,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                         img_name,
                     )
                 )
-                if is_old_placeholder:
-                    pass
-                elif hasattr(obj.image, "storage") and obj.image.storage.exists(obj.image.name):
+                if obj.image.name and not is_old_placeholder:
                     request = self.context.get("request")
                     if request:
                         return request.build_absolute_uri(obj.image.url)
