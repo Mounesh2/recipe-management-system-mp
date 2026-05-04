@@ -240,7 +240,7 @@ class RecipeDetailSerializer(RecipeSerializer):
             recipe.tags.set(existing_tag_ids)
             
         image_data = self.initial_data.get('image')
-        if image_data:
+        if image_data is not None:
             if isinstance(image_data, str) and image_data.startswith('data:image'):
                 recipe.image_base64 = image_data
                 recipe.save()
@@ -257,6 +257,10 @@ class RecipeDetailSerializer(RecipeSerializer):
                     recipe.save()
                 except Exception:
                     pass
+            elif image_data == "":
+                recipe.image_base64 = ""
+                recipe.image = None
+                recipe.save()
             
         return recipe
 
@@ -295,7 +299,7 @@ class RecipeDetailSerializer(RecipeSerializer):
             instance.tags.set(existing_tag_ids)
             
         image_data = self.initial_data.get('image')
-        if image_data:
+        if image_data is not None:
             if isinstance(image_data, str) and image_data.startswith('data:image'):
                 instance.image_base64 = image_data
                 instance.save()
@@ -312,6 +316,10 @@ class RecipeDetailSerializer(RecipeSerializer):
                     instance.save()
                 except Exception:
                     pass
+            elif image_data == "":
+                instance.image_base64 = ""
+                instance.image = None
+                instance.save()
             
         return instance
 
