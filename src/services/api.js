@@ -12,6 +12,7 @@ const api = axios.create({
 // Helper to clean image URLs
 const cleanImageUrl = (url) => {
     if (!url) return url;
+    if (url.startsWith('data:image')) return url;
     try {
         const decoded = decodeURIComponent(url);
         if (decoded.includes('http')) {
