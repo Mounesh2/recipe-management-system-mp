@@ -30,12 +30,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'image']
 
     def get_image(self, obj):
-        # Prefer curated per-title Unsplash URLs so each catalog recipe gets a distinct image
-        # even when the DB points at the same missing/ephemeral uploaded file (common on Render).
-        mapped_id = recipe_images.unsplash_id_for_title(obj.title or "")
-        if mapped_id:
-            return recipe_images.unsplash_url(mapped_id)
-
         if getattr(obj, 'image_base64', None):
             return obj.image_base64
 
@@ -56,6 +50,11 @@ class RecipeSerializer(serializers.ModelSerializer):
                     return obj.image.url if hasattr(obj.image, "url") else str(obj.image)
         except Exception:
             pass
+
+        # Prefer curated per-title Unsplash URLs so each catalog recipe gets a distinct image
+        mapped_id = recipe_images.unsplash_id_for_title(obj.title or "")
+        if mapped_id:
+            return recipe_images.unsplash_url(mapped_id)
 
         t = (obj.title or "").lower().strip()
 
