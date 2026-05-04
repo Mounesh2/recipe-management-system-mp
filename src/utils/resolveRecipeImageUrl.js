@@ -47,6 +47,9 @@ export function resolveRecipeImageUrl(title, recipeId, apiImage) {
     if (!raw) {
         return hashFoodImage(cleanTitle, recipeId);
     }
+    if (raw.startsWith('data:image/')) {
+        return raw;
+    }
     if (raw.includes('images.unsplash.com')) {
         return raw;
     }
