@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL =
-    import.meta.env.VITE_API_URL || 'https://recipe-management-system-mp-1.onrender.com/api';
+const API_BASE_URL = 'https://recipe-management-system-mp.onrender.com/api';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
