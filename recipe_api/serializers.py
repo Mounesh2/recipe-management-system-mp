@@ -239,6 +239,11 @@ class RecipeDetailSerializer(RecipeSerializer):
             existing_tag_ids = list(Tag.objects.filter(id__in=valid_tag_ids).values_list('id', flat=True))
             recipe.tags.set(existing_tag_ids)
             
+        image_data = self.initial_data.get('image')
+        if image_data and isinstance(image_data, str) and image_data.startswith('data:image'):
+            recipe.image_base64 = image_data
+            recipe.save()
+            
         return recipe
 
     def update(self, instance, validated_data):
@@ -274,6 +279,11 @@ class RecipeDetailSerializer(RecipeSerializer):
                     valid_tag_ids.append(tag_obj.id)
             existing_tag_ids = list(Tag.objects.filter(id__in=valid_tag_ids).values_list('id', flat=True))
             instance.tags.set(existing_tag_ids)
+            
+        image_data = self.initial_data.get('image')
+        if image_data and isinstance(image_data, str) and image_data.startswith('data:image'):
+            instance.image_base64 = image_data
+            instance.save()
             
         return instance
 
