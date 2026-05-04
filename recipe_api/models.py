@@ -16,6 +16,7 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag, related_name='recipes')
     youtube_url = models.URLField(blank=True, null=True, help_text="YouTube video URL")
+    image_base64 = models.TextField(blank=True, null=True, help_text="Stored Base64 encoded image string")
 
     def __str__(self):
         return self.title
