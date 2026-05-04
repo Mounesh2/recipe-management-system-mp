@@ -141,12 +141,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             '1532980400377-44020efc4051', '1561840884-cb48cf318222', '1561651119-971c261ffbfd', '1514843319296-186c76646824'
         ]
 
-        # Use the Free Unsplash Keyword/Source API to get a relevant food image
-        if t:
-            safe_query = t.replace(' ', ',').strip()
-            if safe_query:
-                return f"https://source.unsplash.com/featured/?food,{safe_query}"
-
         unsplash_id = universal_food[(obj.id or 0) % len(universal_food)]
         return f"https://images.unsplash.com/photo-{unsplash_id}?auto=format&fit=crop&w=800&h=600&q=80"
 
