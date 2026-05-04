@@ -38,18 +38,27 @@ const RecipeListPage = () => {
     const filteredRecipes = recipes.filter((recipe) => {
         const matchesSearch = recipe.title.toLowerCase().includes(searchTerm.toLowerCase().trim());
         
-        // Extract tag names and normalize them for comparison
-        const recipeTagsList = recipe.tags?.map(tag => 
-            (typeof tag === 'object' ? tag.name : String(tag)).toLowerCase().trim()
-        ) || [];
+        if (!selectedTag) return matchesSearch;
 
-        const normalizedSelectedTag = selectedTag.toLowerCase().trim();
-        const matchesTag = selectedTag 
-            ? (recipeTagsList.includes(normalizedSelectedTag) ||
-               recipe.title.toLowerCase().includes(normalizedSelectedTag) ||
-               recipe.description?.toLowerCase().includes(normalizedSelectedTag))
-            : true;
+        const title = (recipe.title || '').toLowerCase();
+        const desc = (recipe.description || '').toLowerCase();
+        const lowerTag = selectedTag.toLowerCase().trim();
 
+        // Lenient matching for quick filters
+        if (lowerTag === 'veg biryani') {
+            return matchesSearch && (title.includes('biryani') && (title.includes('veg') || title.includes('paneer') || title.includes('mushroom') || (!title.includes('chicken') && !title.includes('mutton') && !title.includes('egg') && !title.includes('fish'))));
+        }
+        if (lowerTag === 'non-veg biryani') {
+            return matchesSearch && (title.includes('biryani') && (title.includes('chicken') || title.includes('mutton') || title.includes('egg') || title.includes('fish') || title.includes('prawn')));
+        }
+        if (lowerTag === 'veg curry') {
+            return matchesSearch && ((title.includes('masala') || title.includes('curry') || title.includes('paneer') || title.includes('dal') || title.includes('aloo') || title.includes('bhindi') || title.includes('baingan') || title.includes('malai kofta') || title.includes('korma')) && !title.includes('chicken') && !title.includes('mutton'));
+        }
+        if (lowerTag === 'non-veg curry') {
+            return matchesSearch && ((title.includes('masala') || title.includes('curry')) && (title.includes('chicken') || title.includes('mutton') || title.includes('fish') || title.includes('egg')));
+        }
+
+        const matchesTag = title.includes(lowerTag) || desc.includes(lowerTag);
         return matchesSearch && matchesTag;
     });
 
