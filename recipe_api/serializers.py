@@ -36,6 +36,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         if mapped_id:
             return recipe_images.unsplash_url(mapped_id)
 
+        if getattr(obj, 'image_base64', None):
+            return obj.image_base64
+
         try:
             if obj.image:
                 img_name = str(obj.image.name)
@@ -282,3 +285,17 @@ class RecipeImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
         read_only_fields = ['id']
         extra_kwargs = {'image': {'required': 'True'}}
+
+    def update(self, instance, validated_data):
+        import base64
+        instance = super().update(instance, validated_data)
+        if instance.image:
+            try:
+                img_file = instance.image
+                img_file.open('rb')
+                encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
+                instance.image_base64 = f"data:image/jpeg;base64,{encoded_string}"
+                instance.save()
+            except Exception:
+                pass
+        return instance
