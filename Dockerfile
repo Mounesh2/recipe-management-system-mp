@@ -40,5 +40,5 @@ EXPOSE 8000
 # Set the entrypoint script
 ENTRYPOINT ["/app/scripts/entrypoint.sh"]
 
-# Set the default command (Gunicorn for production)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
+# Set the default command (Gunicorn for production, dynamically binding to the assigned PORT)
+CMD ["sh", "-c", "gunicorn core.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
