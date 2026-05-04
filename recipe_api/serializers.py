@@ -31,11 +31,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         try:
             if obj.image:
-                img_name = str(obj.image.name)
-                # Ignore old missing Unsplash files on Render disk
-                if img_name.startswith('recipes/1') or img_name.startswith('recipes/14') or img_name.startswith('recipes/15') or img_name.startswith('recipes/16'):
-                    pass
-                elif hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
+                if hasattr(obj.image, 'storage') and obj.image.storage.exists(obj.image.name):
                     request = self.context.get('request')
                     if request:
                         return request.build_absolute_uri(obj.image.url)
@@ -46,19 +42,19 @@ class RecipeSerializer(serializers.ModelSerializer):
         t = (obj.title or '').lower()
 
         # Group by highly specific keywords so similar recipes always get a relevant photo
-        if 'biryani' in t:
+        if 'biryani' in t or 'pulao' in t:
             biryani_images = [
-                '1563379011-7c749659a591',
-                '1589302168068-964664d93dc0',
-                '1631515233482-962f06f2e2a1',
+                '1563379011-7c749659a591', '1589302168068-964664d93dc0',
+                '1631515233482-962f06f2e2a1', '1633945281428-c5517cfdb8dc',
+                '1626777552726-4a6b5ead36ef', '1603960280030-dbb39794ee73'
             ]
             return f"https://images.unsplash.com/photo-{biryani_images[(obj.id or 0) % len(biryani_images)]}?auto=format&fit=crop&w=800&h=600&q=80"
 
-        if 'paneer' in t or 'malai kofta' in t or 'kofta' in t:
+        if 'paneer' in t or 'malai kofta' in t or 'kofta' in t or 'korma' in t:
             paneer_images = [
-                '1567620832-9fc6debc209f',
-                '1565557623162-a5d1a12d12d1',
-                '1512621776951-a57141f2eefd'
+                '1567620832-9fc6debc209f', '1565557623162-a5d1a12d12d1',
+                '1512621776951-a57141f2eefd', '1560614830-0e1db426e8aa',
+                '1585934580926-f94626bf209f', '1601050690597-df056fb4c57b'
             ]
             return f"https://images.unsplash.com/photo-{paneer_images[(obj.id or 0) % len(paneer_images)]}?auto=format&fit=crop&w=800&h=600&q=80"
 
@@ -104,7 +100,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             ]
             return f"https://images.unsplash.com/photo-{drink_images[(obj.id or 0) % len(drink_images)]}?auto=format&fit=crop&w=800&h=600&q=80"
 
-        if any(kw in t for kw in ['dal', 'makhani', 'chole', 'rajma', 'aloo', 'bhindi', 'baingan', 'pulao', 'rice']):
+        if any(kw in t for kw in ['dal', 'makhani', 'chole', 'rajma', 'aloo', 'bhindi', 'baingan', 'rice']):
             indian_veg_images = [
                 '1585238342021-78c98b81442f',
                 '1546069901-ba9599a7e63c',
@@ -112,17 +108,20 @@ class RecipeSerializer(serializers.ModelSerializer):
             ]
             return f"https://images.unsplash.com/photo-{indian_veg_images[(obj.id or 0) % len(indian_veg_images)]}?auto=format&fit=crop&w=800&h=600&q=80"
 
-        # General Fallbacks
+        # General Fallbacks - 36 distinct verified food IDs
         universal_food = [
             '1546069901-ba9599a7e63c', '1540189549336-e6e99c3679fe', '1565299624946-b28f40a0ae38', '1567620905732-2d1ec7ab7445',
-            '1512621776951-a57141f2eefd', '1513104890138-7c749659a591', '1555939594-58d7cb561ad1', '1499028344343-cd173ffc68a9'
+            '1512621776951-a57141f2eefd', '1513104890138-7c749659a591', '1555939594-58d7cb561ad1', '1499028344343-cd173ffc68a9',
+            '1476224203421-9ac39bcb3327', '1482049016688-2d3e1b311543', '1473093295043-cdd812d0e601', '1544025162-d76694265947',
+            '1579954115545-a95591f28bfc', '1567620832903-9fc6debc209f', '1506354666786-959d6d497f1a', '1504754524776-8f4f37790ca0',
+            '1551024506-0bccd828d307', '1604382354936-07c5d9983bd3', '1515037893149-de7f840978e2', '1565958011703-44f9829ba187',
+            '1529042410759-3b39ef7e3c9a', '1484723088337-39961628b073', '1504674900247-0877df9cc836', '1598514983318-294252329868',
+            '1606755962052-a521ef3661be', '1551183053-bf91a1d81141', '1550547660-5941da7e0e80', '1565557623162-a5d1a12d12d1',
+            '1599487488175-312bd473c011', '1563379011709-8432529f5f8e', '1585238342021-78c98b81442f', '1563805042-df1a82f0a635',
+            '1532980400377-44020efc4051', '1561840884-cb48cf318222', '1561651119-971c261ffbfd', '1514843319296-186c76646824'
         ]
-        hash_val = obj.id or 0
-        for char in t:
-            hash_val = ord(char) + ((hash_val << 5) - hash_val)
-        hash_val = abs(hash_val)
 
-        unsplash_id = universal_food[hash_val % len(universal_food)]
+        unsplash_id = universal_food[(obj.id or 0) % len(universal_food)]
         return f"https://images.unsplash.com/photo-{unsplash_id}?auto=format&fit=crop&w=800&h=600&q=80"
 
 
