@@ -240,9 +240,23 @@ class RecipeDetailSerializer(RecipeSerializer):
             recipe.tags.set(existing_tag_ids)
             
         image_data = self.initial_data.get('image')
-        if image_data and isinstance(image_data, str) and image_data.startswith('data:image'):
-            recipe.image_base64 = image_data
-            recipe.save()
+        if image_data:
+            if isinstance(image_data, str) and image_data.startswith('data:image'):
+                recipe.image_base64 = image_data
+                recipe.save()
+            elif hasattr(image_data, 'read'):
+                try:
+                    import base64
+                    image_data.seek(0)
+                    file_bytes = image_data.read()
+                    encoded_string = base64.b64encode(file_bytes).decode('utf-8')
+                    mime = "image/jpeg"
+                    if hasattr(image_data, 'content_type') and image_data.content_type:
+                        mime = image_data.content_type
+                    recipe.image_base64 = f"data:{mime};base64,{encoded_string}"
+                    recipe.save()
+                except Exception:
+                    pass
             
         return recipe
 
@@ -281,9 +295,23 @@ class RecipeDetailSerializer(RecipeSerializer):
             instance.tags.set(existing_tag_ids)
             
         image_data = self.initial_data.get('image')
-        if image_data and isinstance(image_data, str) and image_data.startswith('data:image'):
-            instance.image_base64 = image_data
-            instance.save()
+        if image_data:
+            if isinstance(image_data, str) and image_data.startswith('data:image'):
+                instance.image_base64 = image_data
+                instance.save()
+            elif hasattr(image_data, 'read'):
+                try:
+                    import base64
+                    image_data.seek(0)
+                    file_bytes = image_data.read()
+                    encoded_string = base64.b64encode(file_bytes).decode('utf-8')
+                    mime = "image/jpeg"
+                    if hasattr(image_data, 'content_type') and image_data.content_type:
+                        mime = image_data.content_type
+                    instance.image_base64 = f"data:{mime};base64,{encoded_string}"
+                    instance.save()
+                except Exception:
+                    pass
             
         return instance
 
@@ -296,15 +324,18 @@ class RecipeImageSerializer(serializers.ModelSerializer):
         extra_kwargs = {'image': {'required': 'True'}}
 
     def update(self, instance, validated_data):
-        import base64
-        instance = super().update(instance, validated_data)
-        if instance.image:
+        img_file = validated_data.get('image')
+        if img_file:
             try:
-                img_file = instance.image
-                img_file.open('rb')
-                encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
-                instance.image_base64 = f"data:image/jpeg;base64,{encoded_string}"
-                instance.save()
+                import base64
+                img_file.seek(0)
+                file_bytes = img_file.read()
+                encoded_string = base64.b64encode(file_bytes).decode('utf-8')
+                mime = "image/jpeg"
+                if hasattr(img_file, 'content_type') and img_file.content_type:
+                    mime = img_file.content_type
+                instance.image_base64 = f"data:{mime};base64,{encoded_string}"
+                img_file.seek(0)
             except Exception:
                 pass
-        return instance
+        return super().update(instance, validated_data)
