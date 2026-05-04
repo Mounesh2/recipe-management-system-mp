@@ -106,6 +106,13 @@ const CreateRecipePage = () => {
             let response;
             if (isEditing) {
                 response = await updateRecipe(id, payload);
+                if (selectedFile) {
+                    try {
+                        await uploadRecipeImage(response.id, selectedFile);
+                    } catch (uploadErr) {
+                        console.error("Auto image upload failed", uploadErr);
+                    }
+                }
             } else {
                 response = await createRecipe(payload);
                 if (selectedFile) {
@@ -267,20 +274,47 @@ const CreateRecipePage = () => {
                                     <option value="4">Mild</option>
                                     <option value="5">Dessert</option>
                                 </select>
+                            </div>                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Recipe Photo</label>
+                                {imagePreview && (
+                                    <div className="mb-3 relative w-full h-48 sm:h-64 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                                        <img 
+                                            src={imagePreview} 
+                                            alt="Preview" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setImagePreview(null);
+                                                setSelectedFile(null);
+                                                setFormData(prev => ({ ...prev, image: '' }));
+                                            }}
+                                            className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-sm"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                        </button>
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            setSelectedFile(file);
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                setImagePreview(reader.result);
+                                                setFormData(prev => ({ ...prev, image: reader.result }));
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Select an image for this recipe (Optional)</p>
                             </div>
-
-                            {!isEditing && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Recipe Photo</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => setSelectedFile(e.target.files[0])}
-                                        className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">Select an image for this new recipe (Optional)</p>
-                                </div>
-                            )}
                         </div>
 
                         {/* Ingredients */}
@@ -343,19 +377,6 @@ const CreateRecipePage = () => {
                         </div>
                     </form>
                 </div>
-
-                {isEditing && (
-                    <div className="mt-8">
-                        <ImageUpload 
-                            recipeId={id} 
-                            currentImage={imagePreview} 
-                            onUploadSuccess={(newImageUrl) => {
-                                setImagePreview(newImageUrl);
-                                setFormData(prev => ({ ...prev, image: newImageUrl }));
-                            }} 
-                        />
-                    </div>
-                )}
             </div>
         </div>
     );
