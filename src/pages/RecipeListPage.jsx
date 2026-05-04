@@ -57,6 +57,14 @@ const RecipeListPage = () => {
         if (lowerTag === 'non-veg curry') {
             return matchesSearch && ((title.includes('masala') || title.includes('curry')) && (title.includes('chicken') || title.includes('mutton') || title.includes('fish') || title.includes('egg')));
         }
+        if (lowerTag === 'italian & pizzas') {
+            const tagNames = (recipe.tags || []).map((tag) => (typeof tag === 'object' ? tag.name : tag)).filter(Boolean);
+            return matchesSearch && (
+                tagNames.some((n) => (n || '').toLowerCase() === 'italian & pizzas') ||
+                title.includes('pizza') ||
+                title.includes('pasta')
+            );
+        }
 
         const matchesTag = title.includes(lowerTag) || desc.includes(lowerTag);
         return matchesSearch && matchesTag;
@@ -101,7 +109,7 @@ const RecipeListPage = () => {
                         { name: 'Non-Veg Biryani', img: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=100&auto=format' },
                         { name: 'Veg Curry', img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=100&auto=format' },
                         { name: 'Non-Veg Curry', img: '/non_veg_curry.png' },
-                        { name: 'Pizza', img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=100&auto=format' },
+                        { name: 'Italian & Pizzas', img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=100&auto=format' },
                         { name: 'Cake', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&auto=format' },
                         { name: 'Ice Cream', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=100&auto=format' },
                         { name: 'Shake', img: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=100&auto=format' },
