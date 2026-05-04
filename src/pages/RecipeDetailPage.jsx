@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getRecipe, deleteRecipe } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { getRecipeCoverUrlWithAliases } from '../data/recipeCoverImages';
 
 const RecipeDetailPage = () => {
     const { id } = useParams();
@@ -87,7 +88,8 @@ const RecipeDetailPage = () => {
         return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
     };
 
-    const imageSource = recipe.image || getBeautifulFoodImage();
+    const catalogCover = getRecipeCoverUrlWithAliases(recipe.title);
+    const imageSource = catalogCover || recipe.image || getBeautifulFoodImage();
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -134,7 +136,10 @@ const RecipeDetailPage = () => {
                             alt={recipe.title} 
                             onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
+                                const fallback = getBeautifulFoodImage();
+                                if (e.target.src !== fallback) {
+                                    e.target.src = fallback;
+                                }
                             }}
                             className="absolute inset-0 w-full h-full object-cover"
                         />

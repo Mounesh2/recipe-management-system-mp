@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { getRecipeCoverUrlWithAliases } from '../data/recipeCoverImages';
 
 const RecipeCard = ({ id, title, image, cookingTime, price, tags = [] }) => {
     const getBeautifulFoodImage = () => {
         const t = (title || '').toLowerCase();
 
-        // 20 verified 200 OK exclusively food Unsplash IDs
         const universalFood = [
             '1546069901-ba9599a7e63c', '1540189549336-e6e99c3679fe', '1565299624946-b28f40a0ae38', '1567620905732-2d1ec7ab7445',
             '1512621776951-a57141f2eefd', '1513104890138-7c749659a591', '1555939594-58d7cb561ad1', '1499028344343-cd173ffc68a9',
@@ -21,14 +21,14 @@ const RecipeCard = ({ id, title, image, cookingTime, price, tags = [] }) => {
         hash = Math.abs(hash);
 
         const unsplashId = universalFood[hash % universalFood.length];
-
-        // Safely adjust dimensions by a few pixels so caching is separated and images vary slightly
         const w = 800 + (hash % 15);
         const h = 600 + (hash % 15);
         return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
     };
 
-    const imageSource = image || getBeautifulFoodImage();
+    // Prefer bundled per-title covers so broken /media URLs on production never load (they 404 → same onError image).
+    const catalogCover = getRecipeCoverUrlWithAliases(title);
+    const imageSource = catalogCover || image || getBeautifulFoodImage();
 
     return (
         <Link 
@@ -41,7 +41,10 @@ const RecipeCard = ({ id, title, image, cookingTime, price, tags = [] }) => {
                     alt={title} 
                     onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
+                        const fallback = getBeautifulFoodImage();
+                        if (e.target.src !== fallback) {
+                            e.target.src = fallback;
+                        }
                     }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />

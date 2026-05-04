@@ -201,7 +201,18 @@ UNSPLASH_BY_TITLE = {
 _TITLE_ALIASES = {
     "Cheesecake Classic": "Cheesecake",
     "Tiramisu Cake": "Classic Tiramisu Cake",
+    "Creme Brulee": "Crème Brûlée",
+    "Creme Brûlée": "Crème Brûlée",
 }
+
+def _build_lookup_lower() -> dict[str, str]:
+    out: dict[str, str] = {}
+    for canon, photo_id in UNSPLASH_BY_TITLE.items():
+        out[canon.lower()] = photo_id
+    return out
+
+
+_LOOKUP_LOWER = _build_lookup_lower()
 
 
 def _normalize_title(title: str) -> str:
@@ -213,11 +224,20 @@ def _normalize_title(title: str) -> str:
 
 
 def unsplash_id_for_title(title: str) -> str | None:
-    return UNSPLASH_BY_TITLE.get(_normalize_title(title))
+    norm = _normalize_title(title)
+    pid = UNSPLASH_BY_TITLE.get(norm)
+    if pid:
+        return pid
+    return _LOOKUP_LOWER.get(norm.lower())
 
 
 def unsplash_url(photo_id: str, w: int = 800, h: int = 600, recipe_id: int | None = None) -> str:
-    url = f"https://images.unsplash.com/photo-{photo_id}?auto=format&fit=crop&w={w}&h={h}&q=80"
-    if recipe_id is not None:
-        url += f"&recipe={recipe_id}"
-    return url
+    # Keep URL minimal — some browsers/CDNs mishandle extra query params on hotlinked images.
+    return f"https://images.unsplash.com/photo-{photo_id}?auto=format&fit=crop&w={w}&h={h}&q=80"
+
+
+def unsplash_url_for_recipe(title: str, recipe_id: int | None = None) -> str | None:
+    pid = unsplash_id_for_title(title)
+    if not pid:
+        return None
+    return unsplash_url(pid, recipe_id=recipe_id)

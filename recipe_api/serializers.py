@@ -34,9 +34,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         # even when the DB points at the same missing/ephemeral uploaded file (common on Render).
         mapped_id = recipe_images.unsplash_id_for_title(obj.title or "")
         if mapped_id:
-            return recipe_images.unsplash_url(
-                mapped_id, recipe_id=getattr(obj, "pk", None) or getattr(obj, "id", None)
-            )
+            return recipe_images.unsplash_url(mapped_id)
 
         try:
             if obj.image:
