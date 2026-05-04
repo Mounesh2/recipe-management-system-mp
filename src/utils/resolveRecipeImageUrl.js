@@ -50,10 +50,6 @@ export function resolveRecipeImageUrl(title, recipeId, apiImage) {
     if (raw.includes('images.unsplash.com')) {
         return raw;
     }
-    // Uploaded files on Render are often 404 after redeploy — don't use for display.
-    if (raw.includes('/media/')) {
-        return hashFoodImage(cleanTitle, recipeId);
-    }
     if (raw.startsWith('http://') || raw.startsWith('https://')) {
         return raw;
     }
