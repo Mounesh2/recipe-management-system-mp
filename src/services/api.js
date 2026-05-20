@@ -4,9 +4,14 @@ const PRODUCTION_API_URL =
     'https://recipe-management-system-mp.onrender.com/api';
 const LOCAL_API_URL = 'http://127.0.0.1:8000/api';
 
-const API_BASE_URL =
+let API_BASE_URL =
     import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD ? PRODUCTION_API_URL : LOCAL_API_URL);
+
+// Ensure the API base URL always ends with /api (without duplicating it)
+if (API_BASE_URL && !API_BASE_URL.endsWith('/api') && !API_BASE_URL.endsWith('/api/')) {
+    API_BASE_URL = API_BASE_URL.replace(/\/$/, '') + '/api';
+}
 
 console.log('API_BASE_URL configured:', API_BASE_URL);
 console.log('import.meta.env.VITE_API_URL:', import.meta.env.VITE_API_URL);
