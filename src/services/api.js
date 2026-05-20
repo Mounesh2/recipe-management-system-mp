@@ -8,6 +8,10 @@ const API_BASE_URL =
     import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD ? PRODUCTION_API_URL : LOCAL_API_URL);
 
+console.log('API_BASE_URL configured:', API_BASE_URL);
+console.log('import.meta.env.VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('import.meta.env.PROD:', import.meta.env.PROD);
+
 const RECIPES_CACHE_KEY = 'recipe_app_recipes_v1';
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const API_TIMEOUT_MS = 20000;
