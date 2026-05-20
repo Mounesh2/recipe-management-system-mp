@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { login as apiLogin, register as apiRegister } from '../services/api';
 
 const AuthContext = createContext();
@@ -8,27 +8,21 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(null);
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const initializeAuth = () => {
-            try {
-                const storedToken = localStorage.getItem('token');
-                if (storedToken) {
-                    setToken(storedToken);
-                    setUser({ initialized: true });
-                }
-            } catch (error) {
-                console.error("Initialize auth failed:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        initializeAuth();
-    }, []);
+    const [token, setToken] = useState(() => {
+        try {
+            return localStorage.getItem('token');
+        } catch {
+            return null;
+        }
+    });
+    const [user, setUser] = useState(() => {
+        try {
+            return localStorage.getItem('token') ? { initialized: true } : null;
+        } catch {
+            return null;
+        }
+    });
+    const loading = false;
 
     const login = async (email, password) => {
         try {
@@ -73,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };

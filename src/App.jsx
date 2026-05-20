@@ -1,17 +1,16 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-// Components
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import PageLoader from './components/PageLoader';
 
-// Pages
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import RecipeListPage from './pages/RecipeListPage';
-import RecipeDetailPage from './pages/RecipeDetailPage';
-import CreateRecipePage from './pages/CreateRecipePage';
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const RecipeListPage = lazy(() => import('./pages/RecipeListPage'));
+const RecipeDetailPage = lazy(() => import('./pages/RecipeDetailPage'));
+const CreateRecipePage = lazy(() => import('./pages/CreateRecipePage'));
 
 // A simple wrapper to redirect logged-in users away from the login/register pages
 const PublicRoute = ({ children }) => {
@@ -28,6 +27,7 @@ const App = () => {
                     <Navbar />
                     
                     <main className="flex-grow">
+                        <Suspense fallback={<PageLoader />}>
                         <Routes>
                             {/* Public Auth Routes */}
                             <Route 
@@ -87,6 +87,7 @@ const App = () => {
                                 } 
                             />
                         </Routes>
+                        </Suspense>
                     </main>
                 </div>
             </Router>

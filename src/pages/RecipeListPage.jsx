@@ -1,28 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getRecipes } from '../services/api';
+import { getRecipes, getCachedRecipes } from '../services/api';
 import RecipeCard from '../components/RecipeCard';
 import { resolveRecipeImageUrl } from '../utils/resolveRecipeImageUrl';
 
 const RecipeListPage = () => {
-    const [recipes, setRecipes] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [recipes, setRecipes] = useState(() => getCachedRecipes() || []);
+    const [loading, setLoading] = useState(() => !getCachedRecipes());
+    const [loadError, setLoadError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTag, setSelectedTag] = useState('');
 
     useEffect(() => {
+        let cancelled = false;
+
         const fetchRecipes = async () => {
             try {
+                setLoadError(null);
                 const data = await getRecipes();
-                setRecipes(data);
+                if (!cancelled) setRecipes(data);
             } catch (error) {
                 console.error("Failed to fetch recipes:", error);
+                if (!cancelled && !(getCachedRecipes()?.length)) {
+                    setLoadError('Server is waking up. Please wait a moment and try again.');
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
 
         fetchRecipes();
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     // Extract unique tags from the recipes for our dropdown
@@ -72,14 +82,6 @@ const RecipeListPage = () => {
         const matchesTag = title.includes(lowerTag) || desc.includes(lowerTag);
         return matchesSearch && matchesTag;
     });
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -169,12 +171,30 @@ const RecipeListPage = () => {
                     </div>
                 </div>
 
-                {/* Loading State */}
+                {loadError && (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 flex flex-wrap items-center justify-between gap-3">
+                        <span>{loadError}</span>
+                        <button
+                            type="button"
+                            onClick={() => window.location.reload()}
+                            className="font-semibold text-emerald-700 hover:text-emerald-800"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                )}
+
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-24 bg-white rounded-xl border border-gray-100 shadow-sm">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500 mb-4"></div>
-                        <h3 className="text-lg font-medium text-gray-900">Fetching delicious recipes...</h3>
-                        <p className="text-sm text-gray-500 mt-1">Please wait a moment while the server wakes up.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
+                                <div className="h-48 bg-gray-200" />
+                                <div className="p-5 space-y-3">
+                                    <div className="h-5 bg-gray-200 rounded w-3/4" />
+                                    <div className="h-4 bg-gray-100 rounded w-1/2" />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : filteredRecipes.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

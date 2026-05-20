@@ -8,12 +8,46 @@ const API_BASE_URL =
     import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD ? PRODUCTION_API_URL : LOCAL_API_URL);
 
+const RECIPES_CACHE_KEY = 'recipe_app_recipes_v1';
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const API_TIMEOUT_MS = 20000;
+
 const api = axios.create({
     baseURL: API_BASE_URL,
+    timeout: API_TIMEOUT_MS,
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+export function getCachedRecipes() {
+    try {
+        const raw = sessionStorage.getItem(RECIPES_CACHE_KEY);
+        if (!raw) return null;
+        const { data, at } = JSON.parse(raw);
+        if (!Array.isArray(data) || Date.now() - at > CACHE_TTL_MS) return null;
+        return data;
+    } catch {
+        return null;
+    }
+}
+
+function setCachedRecipes(data) {
+    try {
+        sessionStorage.setItem(
+            RECIPES_CACHE_KEY,
+            JSON.stringify({ data, at: Date.now() })
+        );
+    } catch {
+        /* ignore quota errors */
+    }
+}
+
+/** Wake Render free tier while the app shell loads. */
+export function warmupApi() {
+    if (import.meta.env.DEV) return;
+    api.get('/recipes/', { timeout: 8000 }).catch(() => {});
+}
 
 // Helper to clean image URLs
 const cleanImageUrl = (url) => {
@@ -59,13 +93,28 @@ export const register = async (email, password, name) => {
 
 // --- Recipe Endpoints ---
 
-export const getRecipes = async () => {
-    const response = await api.get('/recipes/');
-    const data = response.data || [];
-    return data.map(recipe => ({
+const mapRecipes = (data) =>
+    (data || []).map((recipe) => ({
         ...recipe,
-        image: cleanImageUrl(recipe.image)
+        image: cleanImageUrl(recipe.image),
     }));
+
+export const getRecipes = async () => {
+    let lastError;
+    for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+            const response = await api.get('/recipes/');
+            const mapped = mapRecipes(response.data);
+            setCachedRecipes(mapped);
+            return mapped;
+        } catch (error) {
+            lastError = error;
+            if (attempt === 0) {
+                await new Promise((r) => setTimeout(r, 1200));
+            }
+        }
+    }
+    throw lastError;
 };
 
 export const getRecipe = async (id) => {

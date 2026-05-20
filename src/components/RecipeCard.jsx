@@ -19,7 +19,7 @@ const RecipeCard = ({ id, title, image, cookingTime, price, tags = [] }) => {
         const unsplashId = universalFood[hash % universalFood.length];
         const w = 800 + (hash % 15);
         const h = 600 + (hash % 15);
-        return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
+        return `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=400&h=300&q=75`;
     };
 
     // `image` is already resolved in RecipeListPage (catalog / skip /media / hash).
