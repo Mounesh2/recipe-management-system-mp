@@ -105,46 +105,29 @@ const RecipeListPage = () => {
                 </div>
 
                 {/* Category Quick Filters */}
-                <div className="flex flex-wrap justify-center gap-8 py-8 border-y border-gray-100 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+                <div className="flex overflow-x-auto gap-4 py-4 border-y border-gray-100 bg-white/50 backdrop-blur-sm sticky top-0 z-10 no-scrollbar scroll-smooth px-4 shadow-sm items-center">
                     {[
-                        { name: 'All', img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&auto=format' },
-                        { name: 'Veg Biryani', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=100&auto=format' },
-                        { name: 'Non-Veg Biryani', img: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=100&auto=format' },
-                        { name: 'Veg Curry', img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=100&auto=format' },
-                        { name: 'Non-Veg Curry', img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=100&auto=format' },
-                        { name: 'Italian & Pizzas', img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=100&auto=format' },
-                        { name: 'Cake', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&auto=format' },
-                        { name: 'Ice Cream', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=100&auto=format' },
-                        { name: 'Shake', img: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=100&auto=format' },
-                        { name: 'Dessert', img: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=100&auto=format' }
-                    ].map((cat) => (
+                        'All',
+                        'Veg Biryani',
+                        'Non-Veg Biryani',
+                        'Veg Curry',
+                        'Non-Veg Curry',
+                        'Italian & Pizzas',
+                        'Cake',
+                        'Ice Cream',
+                        'Shake',
+                        'Dessert'
+                    ].map((catName) => (
                         <button
-                            key={cat.name}
-                            onClick={() => setSelectedTag(cat.name === 'All' ? '' : cat.name)}
-                            className={`flex flex-col items-center group transition-all duration-500 ${
-                                (selectedTag === cat.name || (cat.name === 'All' && !selectedTag))
-                                    ? 'scale-110'
-                                    : 'opacity-70 hover:opacity-100'
+                            key={catName}
+                            onClick={() => setSelectedTag(catName === 'All' ? '' : catName)}
+                            className={`flex-none px-6 py-2.5 rounded-full text-sm font-bold uppercase tracking-wide transition-all duration-300 ${
+                                (selectedTag === catName || (catName === 'All' && !selectedTag))
+                                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200 transform scale-105'
+                                    : 'bg-white text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200 hover:border-emerald-200'
                             }`}
                         >
-                            <div className={`w-20 h-20 rounded-full overflow-hidden mb-3 border-4 transition-all duration-500 shadow-md ${
-                                (selectedTag === cat.name || (cat.name === 'All' && !selectedTag))
-                                    ? 'border-emerald-500 shadow-emerald-200 ring-4 ring-emerald-50'
-                                    : 'border-white group-hover:border-emerald-200'
-                            }`}>
-                                <img 
-                                    src={cat.img} 
-                                    alt={cat.name}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                            </div>
-                            <span className={`text-sm font-black uppercase tracking-widest ${
-                                (selectedTag === cat.name || (cat.name === 'All' && !selectedTag))
-                                    ? 'text-emerald-700'
-                                    : 'text-gray-600'
-                            }`}>
-                                {cat.name}
-                            </span>
+                            {catName}
                         </button>
                     ))}
                 </div>
