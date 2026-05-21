@@ -7,7 +7,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -17,13 +17,13 @@ const LoginPage = () => {
         setIsLoading(true);
 
         const result = await login(email, password);
-        
+
         if (result.success) {
             navigate('/');
         } else {
-            setError(result.message || 'Failed to login. Please check your credentials.');
+            setError('Failed to login. Please check your credentials.');
         }
-        
+
         setIsLoading(false);
     };
 
@@ -38,14 +38,14 @@ const LoginPage = () => {
                         Sign in to manage your recipes
                     </p>
                 </div>
-                
+
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     {error && (
                         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
                             <p className="text-sm text-red-700">{error}</p>
                         </div>
                     )}
-                    
+
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">
